@@ -1,45 +1,37 @@
-// 整个项目的入口文件
+
+
+// ----------------整个项目的入口文件---------------------
+
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore , applyMiddleware} from 'redux'
+import { createStore , applyMiddleware , compose} from 'redux'
 import { Provider } from 'react-redux'
-import { BrowserRouter , Route , Link , Switch} from 'react-router-dom'
+import { BrowserRouter , Route  , Redirect, Switch} from 'react-router-dom'
 import thunk from 'redux-thunk' // 用于开启异步请求
-import { crateReducer  } from  './index.redux'
+import './config/config'
 //合并多个reducer
-import { reducers } from  './reducer'
+import reducers  from  './reducer'
 
-import App from './App'
 import Auth from './Auth/Auth'
 import Boss from './boss/boss'
 
-
-// 新建store   redux的仓库  状态仓库一般是要放在主入口文件的
-const store = createStore(crateReducer,applyMiddleware(thunk));
+const reduxDevtools = window.devToolsExtension ? window.devToolsExtension() : f => f;
+// 新建store   redux的仓库
+const store = createStore(reducers,compose( // compose是配置redux的谷歌浏览器调试
+        applyMiddleware(thunk),
+        reduxDevtools
+    ));  // 使用appleMiddleware是封装了dispatch
 // 将组件App放到id为root的div里面显示,在public下的index.html里面的<div id="root"></div>，既是：index.html是主显示文件
 ReactDOM.render(
     /*Provider组件在应用的最外层，传入store，只用一次*/
     (<Provider store={store}>
         <BrowserRouter>
-            <div>
-                <ul>
-                    <li>
-                        <Link to="/"  >首页</Link>
-                    </li>
-                    <li>
-                        <Link to="/Auth/Auth" >个人</Link>
-                    </li>
-                    <li>
-                        <Link to="/boss/boss" >boss</Link>
-                    </li>
-                </ul>
-                {/*exact 表示完全匹配才显示*/}
-                <Switch>
-                    <Route path='/' exact component={App}/>
-                    <Route path='/Auth/Auth' component={Auth}/>
-                    <Route path='/boss/boss' component={Boss}/>
-                </Switch>
-            </div>
+            {/*exact 表示完全匹配才显示*/}
+            <Switch>
+                <Route path='/login' component={Auth}/>
+                <Route path='/boss/boss' component={Boss}/>
+                <Redirect to="/boss/boss" /> {/*如果没有匹配的，就跳转到/boss/boss*/}
+            </Switch>
         </BrowserRouter>
     </Provider>), document.getElementById('root'));
 

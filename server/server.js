@@ -39,6 +39,12 @@ app.get('/', function (req, res) {
     res.send('<h1>hello node express</h1>')
 });
 
+app.get('/data',function(req, res){
+    User.findOne({user:'wangtao'},function(err,doc){
+        res.json(doc)
+    })
+})
+
 // 修改数据
 User.update({'user':'wagntao'},{'$set':{age:22}},function (err, doc) {
     console.log(doc)

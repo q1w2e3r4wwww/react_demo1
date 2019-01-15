@@ -8,6 +8,13 @@ import { add_num , Decrease_num , addAsync} from "./index.redux";
 import './index.css'
 import 'antd-mobile/dist/antd-mobile.css'
 
+// 因为函数体是一个对象，所以该箭头函数的函数体需要使用()来包裹 state => ({num : state})
+@connect(
+    // 要state的什么属性放到props里
+    (state) => ({num : state}),
+    // 要什么方法放到props里，自动dispatch
+    { add_num , Decrease_num , addAsync}) // 通过调用add_num这些方法来触发state.crateReducer这个reducer,
+
 // 创建一个react组件，固定语法：类 + name + extends + react.component{ render（）{ retrun (  这里是主显示页面展示的内容   )}}
 class App extends Component {
     constructor(props) { //组件加载成功，该构造器就会执行，this.state相当于vue的data
@@ -63,7 +70,7 @@ class App extends Component {
                 <span>这里学习redux</span>
                 <div>
                     <button type="button" onClick={this.props.Decrease_num}>-</button>
-                    <input type="text" value={this.props.num}/>
+                    <input type="text" value={ this.props.num.crateReducer }/>
                     {/*由dispatch方法将状态发送给redux的对应的reducer函数来执行相关内容修改操作*/}
                     <button type="button" onClick={this.props.add_num}>+</button>
                     <button type="button" onClick={this.props.addAsync}>晚2秒增加</button>
@@ -72,10 +79,5 @@ class App extends Component {
         );
     }
 }
-const mapStatetoProps = (state) => {
-    return { num:state }
-}
-// connect 负责从外部获取组件需要的参数
-const actionCreators = {add_num , Decrease_num , addAsync}; //上面使用this.props.add_num获取点击方法，是从connect方法这里获取到的
-App = connect(mapStatetoProps,actionCreators)(App) // 连接react组件和Redux store,
+
 export default App; // 这里导出，src下的index.js才可能通过import引入
